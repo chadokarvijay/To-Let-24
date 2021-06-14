@@ -1,0 +1,22 @@
+{
+  "name": "to-let-24",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chadokarvijay/To-Let-24.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chadokarvijay/To-Let-24/issues"
+  },
+  "homepage": "https://github.com/chadokarvijay/To-Let-24#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
