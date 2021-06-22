@@ -59,7 +59,8 @@ mongoose.connect("mongodb://localhost:27017/tolet24DB", {
     useUnifiedTopology: true
 });
 var imageSchema = new mongoose.Schema({
-    name: String,
+    userid: String,
+    city: String,
     img: {
         data: Buffer,
         contentType: String
@@ -69,7 +70,17 @@ var imgModel = mongoose.model("posts", imageSchema);
 
 
 
-app.get('/', (req, res) => res.render('index'));
+app.get('/', (req, res) => {
+    imgModel.find({}, (err, items) => {
+        if (err) {
+            console.log(err);
+            res.status(500).send('An error occurred', err);
+        }
+        else {
+            res.render('index', { items: items });
+        }
+    });
+});
 
 app.post('/upload', (req, res) => {
     upload(req, res, (err) => {
@@ -77,34 +88,37 @@ app.post('/upload', (req, res) => {
             res.render('index', {
                 msg: err
             });
+        } else if (req.file == undefined) {
+            res.render('index', {
+                msg: 'Error: No File Selected!'
+            });
         } else {
-            if (req.file == undefined) {
-                res.render('index', {
-                    msg: 'Error: No File Selected!'
-                });
-            } else {
 
-                var obj = {
-                    name: req.body.name,
-                    img: {
-                        data: fs.readFileSync(path.join(__dirname + '/public/uploads/' + req.file.filename)),
-                        contentType: 'image/png'
-                    }
+            var obj = {
+                userid: req.body.userid,
+                city:req.body.city,
+                img: {
+                    data: fs.readFileSync(path.join(__dirname + '/public/uploads/' + req.file.filename)),
+                    contentType: 'image/png'
                 }
-                imgModel.create(obj, (err, item) => {
-                    if (err) {
-                        console.log(err);
-                    } else {
-                        item.save();
-                    }
-                });
-
-
-                res.render('index', {
-                    msg: 'File Uploaded!',
-                    file: `uploads/${req.file.filename}`
-                });
             }
+            imgModel.create(obj, (err, item) => {
+                if (err) {
+                    console.log(err);
+                } else {
+                    item.save();
+                }
+            });
+
+            fs.unlink("./public/uploads/" + req.file.filename, (err) => {
+                if (err) {
+                    console.log("failed to delete local image:" + err);
+                } else {
+                    console.log('successfully deleted local image');
+                }
+            });
+
+            res.redirect("/");
         }
     });
 });
