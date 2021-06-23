@@ -1,0 +1,66 @@
+<!--Author: Atharva Mishra-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+      body
+      {
+          background-color: black;
+      }  
+      input
+      {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+
+      }  
+      #form
+      {
+        background-color:white;  
+        margin: 5px auto;
+        border: 2px solid transparent;
+        width: 50%;
+      }  
+      #close
+      {
+        padding-left: 95%;
+        color: red;
+      }
+      button
+      {
+          width: 30%;
+          margin:1% 30%;
+          padding: 12px 20px;
+
+      }
+    </style>
+</head>
+<body>
+    <form method = "" action ="" id ="form">
+        <span id = "close" title ="Exit" ><a href="index.html">&times</a></span>
+        <div>
+            Join our family
+        </div>
+        <label for="fnm"><b>First Name</b></label>
+        <input type="Text"  name="fnm" required>
+        <label for="lnm"><b>Last Name</b></label>
+        <input type="Text"  name="lnm" required>
+        <label for="email"><b>Email-Id</b></label>
+        <input type="email"  name="email" required>
+        <label for="uname"><b>Username</b></label>
+        <input type="text" name="uname" required> 
+        <label for="psw"><b>Password</b></label>
+        <input type="password"  name="psw" required>
+        <label for="repsw"><b>Re-enter password</b></label>
+        <input type="password"  name="repsw" required>
+        <button type="submit">Sign-Up</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!--author: Atharva Mishra-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body
+        {
+          background-color: black; 
+        }
+        input
+        {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        }
+        button
+        {
+          width: 30%;
+          margin:1% 30%;
+          padding: 12px 20px;
+        }       
+       #form
+       {   
+           
+        background-color:white;  
+        margin: 5px auto;
+        border: 2px solid transparent;
+        width: 50%;
+       }
+       #close 
+       {
+           padding-left: 95%;
+           color: red;
+       }
+       #bottom
+       {
+           padding: 0% 31%;
+       }
+    </style>
+</head>
+<body>
+    <form method ="POST" action =" " id ="form">
+    <span id = "close" title ="Exit" ><a href="index.html">&times</a></span>
+       <div>
+        Welcome back
+       </div>
+       <label for="uname"><b>Username</b></label>
+       <input type="text" name="uname" required> 
+       <label for="psw"><b>Password</b></label>
+       <input type="password"  name="psw" required>
+       <button type="submit">Login</button>
+       <div id ="bottom">
+       <span class="psw">Forgot <a href="#">password?</a></span>
+        </div>  
+        <button type="submit" onclick="location.href='signup.html'">Sign up</button>
+
+    </form>
+ 
+   
+</body>
+</html>
