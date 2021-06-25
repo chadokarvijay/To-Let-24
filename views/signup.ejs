@@ -1,0 +1,68 @@
+<!--Author: Atharva Mishra-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+      body
+      {
+          background-color: black;
+      }
+      input
+      {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0px;
+        display: inline-block;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+
+      }
+      #form
+      {
+        background-color:white;
+        margin: 5px auto;
+        border: 2px solid transparent;
+        width: 50%;
+      }
+      #close
+      {
+        padding-left: 95%;
+        color: red;
+      }
+      button
+      {
+          width: 30%;
+          margin:1% 30%;
+          padding: 12px 20px;
+
+      }
+    </style>
+</head>
+<body>
+    <form action ="/signup" method = "POST" id ="form">
+        <span id = "close" title ="Exit" ><a href="index.html">&times</a></span>
+        <div>
+            Join our family
+        </div>
+        <label for="firstname"><b>First Name</b></label>
+        <input type="Text"  name="firstname" required>
+        <label for="lastname"><b>Last Name</b></label>
+        <input type="Text"  name="lastname" required>
+        <label for="mobileno"><b>Mobile No.</b></label>
+        <input type="text" name="mobileno" required>
+        <label for="email"><b>Email-Id</b></label>
+        <input type="email"  name="email" required>
+        <label for="username"><b>Username</b></label>
+        <input type="text" name="username" required>
+        <label for="password"><b>Password</b></label>
+        <input type="password"  name="password" required>
+        <label for="repassword"><b>Re-enter password</b></label>
+        <input type="password"  name="repassword" required>
+        <button type="submit">Sign-Up</button>
+    </form>
+</body>
+</html>

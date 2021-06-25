@@ -44,6 +44,7 @@ mongoose.connect("mongodb://localhost:27017/tolet24DB", {
 });
 
 var imgModel = mongoose.model("posts",schemas.imageSchema);
+var userModel = mongoose.model('users',schemas.userSchema);
 
 
 app.get('/', (req, res) => {
@@ -59,7 +60,7 @@ app.post('/upload', (req, res) => {
         } else {
 
             var obj = {
-                userid: req.body.userid,
+                username: req.body.username,
                 city:req.body.city,
                 description:req.body.description,
                 img: {
@@ -86,6 +87,9 @@ app.post('/upload', (req, res) => {
     });
 });
 
+
+
+
 app.get('/search',(req,res)=>{
     res.render('search',{items:[]});
 });
@@ -102,6 +106,30 @@ app.post('/search',(req,res)=>{
     });
 });
 
+
+
+app.get('/signup',(req,res)=>{
+    res.render('signup');
+});
+
+app.post('/signup',(req,res)=>{
+    var obj = {
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        username: req.body.username,
+        mobileno: req.body.mobileno,
+        email: req.body.email,
+        password: req.body.password
+    }
+    userModel.create(obj, (err, item) => {
+        if (err) {
+            console.log(err);
+        } else {
+            item.save();
+        }
+    });
+    res.redirect('/');
+});
 
 
 const port = 3000;
