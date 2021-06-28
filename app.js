@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const tools = require(__dirname + "/tools.js")
 const schemas = require(__dirname + "/schemas.js")
 var fs = require('fs');
+const bcrypt = require('bcrypt')
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -130,14 +131,17 @@ app.get('/signup', (req, res) => {
     res.render('signup');
 });
 
-app.post('/signup', (req, res) => {
+app.post('/signup', async(req, res) => {
+
+    let hash = await bcrypt.hash(req.body.password, 10)
+    console.log(hash);
     var obj = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         username: req.body.username,
         mobileno: req.body.mobileno,
         email: req.body.email,
-        password: req.body.password
+        password: hash
     }
     userModel.create(obj, (err, item) => {
         if (err) {
