@@ -25,7 +25,7 @@ const upload = multer({
     fileFilter: function(req, file, cb) {
         tools.checkFileType(file, cb, path);
     }
-}).single('myImage');
+}).array('myImage', 4);
 
 
 const app = express();
@@ -43,8 +43,8 @@ mongoose.connect("mongodb://localhost:27017/tolet24DB", {
     useUnifiedTopology: true
 });
 
-var imgModel = mongoose.model("posts",schemas.imageSchema);
-var userModel = mongoose.model('users',schemas.userSchema);
+var imgModel = mongoose.model("posts", schemas.imageSchema);
+var userModel = mongoose.model('users', schemas.userSchema);
 
 
 app.get('/', (req, res) => {
@@ -54,19 +54,36 @@ app.get('/', (req, res) => {
 app.post('/upload', (req, res) => {
     upload(req, res, (err) => {
         if (err) {
-            res.render('index', {msg: err});
-        } else if (req.file == undefined) {
-            res.render('index', {msg: 'Error: No File Selected!'});
+            res.render('index', {
+                msg: err
+            });
+        } else if (req.files == undefined) {
+            res.render('index', {
+                msg: 'Error: No File Selected!'
+            });
         } else {
+            const imgs = [];
+            const files = req.files;
+
+            files.forEach((file) => {
+                const img = {
+                    data: fs.readFileSync(path.join(__dirname + '/public/uploads/' + file.filename)),
+                    contentType: 'image/png'
+                }
+                imgs.push(img);
+
+                fs.unlink("./public/uploads/" + file.filename, (err) => {
+                    if (err) {
+                        console.log("failed to delete local image:" + err);
+                    }
+                })
+            });
 
             var obj = {
                 username: req.body.username,
-                city:req.body.city,
-                description:req.body.description,
-                img: {
-                    data: fs.readFileSync(path.join(__dirname + '/public/uploads/' + req.file.filename)),
-                    contentType: 'image/png'
-                }
+                city: req.body.city,
+                description: req.body.description,
+                imgs: imgs
             }
             imgModel.create(obj, (err, item) => {
                 if (err) {
@@ -76,13 +93,9 @@ app.post('/upload', (req, res) => {
                 }
             });
 
-            fs.unlink("./public/uploads/" + req.file.filename, (err) => {
-                if (err) {
-                    console.log("failed to delete local image:" + err);
-                }
+            res.render('index', {
+                msg: 'Successfully uploaded!'
             });
-
-            res.render('index',{msg: 'Successfully uploaded!'});
         }
     });
 });
@@ -90,29 +103,34 @@ app.post('/upload', (req, res) => {
 
 
 
-app.get('/search',(req,res)=>{
-    res.render('search',{items:[]});
+app.get('/search', (req, res) => {
+    res.render('search', {
+        items: []
+    });
 });
 
-app.post('/search',(req,res)=>{
-    imgModel.find({city:req.body.city}, (err, items) => {
+app.post('/search', (req, res) => {
+    imgModel.find({
+        city: req.body.city
+    }, (err, items) => {
         if (err) {
             console.log(err);
             res.status(500).send('An error occurred', err);
-        }
-        else {
-            res.render('search', { items: items });
+        } else {
+            res.render('search', {
+                items: items
+            });
         }
     });
 });
 
 
 
-app.get('/signup',(req,res)=>{
+app.get('/signup', (req, res) => {
     res.render('signup');
 });
 
-app.post('/signup',(req,res)=>{
+app.post('/signup', (req, res) => {
     var obj = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,

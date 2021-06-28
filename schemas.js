@@ -5,10 +5,10 @@ const imageSchema = new Schema({
     username: String,
     city: String,
     description: String,
-    img: {
+    imgs: [{
         data: Buffer,
         contentType: String
-    }
+    }]
 });
 module.exports.imageSchema= imageSchema;
 
