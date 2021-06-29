@@ -133,8 +133,7 @@ app.get('/signup', (req, res) => {
 
 app.post('/signup', async(req, res) => {
 
-    let hash = await bcrypt.hash(req.body.password, 10)
-    console.log(hash);
+    let hash = await bcrypt.hash(req.body.password, 10);
     var obj = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
