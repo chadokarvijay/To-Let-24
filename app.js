@@ -152,7 +152,38 @@ app.post('/signup', async(req, res) => {
     res.redirect('/');
 });
 
+app.get('/login', (req, res) => {
+    res.render('login');
+});
 
+
+app.post('/login', async(req, res) => {
+
+    password = req.body.password
+    let user = await userModel.findOne({ username: req.body.username });
+
+    if (user == null) {
+        res.render('login', { msg: 'NO SUCH USER EXISTS' });
+        return;
+    }
+
+
+    let checkPassword = await bcrypt.compare(password, user["password"])
+    console.log(checkPassword);
+
+    if (!checkPassword) {
+        res.render('login', { msg: 'INCORRECT PASSWORD' });
+        return;
+    } else {
+        res.render('login', { msg: "LOGGEN IN SUCCESSFULLY" });
+        console.log("CLEANNN")
+    }
+
+
+
+
+
+});
 const port = 3000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
