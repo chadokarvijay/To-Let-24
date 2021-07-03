@@ -140,6 +140,7 @@ app.get('/signup', (req, res) => {
     res.render('signup');
 });
 
+// -------------------- code by Mannan---------------------------------------
 app.post('/signup', async (req, res) => {
 
     let passwordHash = await bcrypt.hash(req.body.password, 10);
@@ -192,11 +193,11 @@ app.post('/login', async (req, res) => {
         return;
     } else {
         res.render('login', {
-            msg: "LOGGEN IN SUCCESSFULLY"
+            msg: "LOGGED IN SUCCESSFULLY"
         });
     }
 });
-
+//------------------------------------------------------------------------
 
 //USER ACCOUNT
 app.get('/users/:username',(req,res)=>{
@@ -233,12 +234,13 @@ app.get('/users/:username',(req,res)=>{
 app.post('/update-user',async(req,res)=>{
     let user=req.body;
     let redirectURL='/';
-    if(user.password.length===0){;
-        redirectURL="/users/"+user.username+"?msg=Password cannot be empty";
-    }else if(user.password!=user.repassword){;
+    
+    if(user.password!=user.repassword){
         redirectURL="/users/"+user.username+"?msg=Password do not match";
     }else{
         delete user['repassword'];
+        let passwordHash = await bcrypt.hash(user["password"], 10);
+        user["password"]=passwordHash;
         await userModel.findOneAndUpdate({username:user.username}, user);
         redirectURL="/users/"+user.username+"?msg=Account updated Successfully";
     }
