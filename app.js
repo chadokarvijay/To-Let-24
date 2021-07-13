@@ -1,3 +1,6 @@
+if(process.env.NODE_ENV!=='production'){
+    require('dotenv').config();
+}
 const express = require('express');
 const multer = require('multer');
 const bodyParser = require("body-parser");
@@ -8,6 +11,10 @@ const tools = require(__dirname + "/tools.js")
 const schemas = require(__dirname + "/schemas.js")
 var fs = require('fs');
 const bcrypt = require('bcrypt')
+const passport=require('passport');
+const initializePassport=require('./passport-config');
+const flash=require('express-flash');
+const session=require('express-session');
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -29,15 +36,6 @@ const upload = multer({
 }).array('myImage', 4);
 
 
-const app = express();
-
-app.set('view engine', 'ejs');
-
-app.use(express.static('./public'));
-
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
 
 mongoose.connect("mongodb://localhost:27017/tolet24DB", {
     useNewUrlParser: true,
@@ -48,6 +46,41 @@ mongoose.connect("mongodb://localhost:27017/tolet24DB", {
 var imgModel = mongoose.model("posts", schemas.imageSchema);
 var userModel = mongoose.model('users', schemas.userSchema);
 
+
+const getUserByUsername= async(username)=>{
+    return await userModel.findOne({ username: username }).exec();
+};
+const getUserById= async(_id)=>{
+    return await userModel.findOne({ _id:_id }).exec();
+};
+initializePassport(passport,getUserByUsername,getUserById);
+
+const app = express();
+
+app.set('view engine', 'ejs');
+
+app.use(express.static('./public'));
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+app.use(flash());
+
+app.use(session({
+    secret:process.env.SESSION_SECRET,
+    resave:false,
+    saveUninitialized:false
+}));
+
+app.use(passport.initialize());
+
+app.use(passport.session());
+
+
+
+
+
+
  //HOME ROUTE
 app.get('/', (req, res) => {
     res.send("Home Route");
@@ -56,11 +89,11 @@ app.get('/', (req, res) => {
 
 
 //UPLOAD
-app.get('/upload', (req, res) => {
+app.get('/upload',tools.checkAuthenticated, (req, res) => {
     res.render('index');
 });
 
-app.post('/upload', (req, res) => {
+app.post('/upload',tools.checkAuthenticated,(req, res) => {
     upload(req, res, (err) => {
         if (err) {
             res.render('index', {
@@ -112,13 +145,13 @@ app.post('/upload', (req, res) => {
 
 
 //SEARCH
-app.get('/search', (req, res) => {
+app.get('/search',tools.checkAuthenticated, (req, res) => {
     res.render('search', {
         items: []
     });
 });
 
-app.post('/search', (req, res) => {
+app.post('/search',tools.checkAuthenticated, (req, res) => {
     imgModel.find({
         city: req.body.city
     }, (err, items) => {
@@ -136,12 +169,12 @@ app.post('/search', (req, res) => {
 
 
 //SIGNUP
-app.get('/signup', (req, res) => {
+app.get('/signup',tools.checkNotAuthenticated, (req, res) => {
     res.render('signup');
 });
 
 // -------------------- code by Mannan---------------------------------------
-app.post('/signup', async (req, res) => {
+app.post('/signup',tools.checkNotAuthenticated, async (req, res) => {
 
     let passwordHash = await bcrypt.hash(req.body.password, 10);
     var obj = {
@@ -165,44 +198,29 @@ app.post('/signup', async (req, res) => {
 
 
 //LOGIN
-app.get('/login', (req, res) => {
-    res.render('login');
+app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
+    res.render('login.ejs');
+});
+
+app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local',{
+    successRedirect:'/search',
+    failureRedirect:'/login',
+    failureFlash:true
+}));
+
+
+//LOGOUT
+app.get('/logout',(req,res)=>{
+    tools.logout(req,res);
 });
 
 
-app.post('/login', async (req, res) => {
-
-    password = req.body.password
-    let user = await userModel.findOne({
-        username: req.body.username
-    });
-
-    if (user == null) {
-        res.render('login', {
-            msg: 'NO SUCH USER EXISTS'
-        });
-        return;
-    }
-
-    let checkPassword = await bcrypt.compare(password, user["password"])
-
-    if (!checkPassword) {
-        res.render('login', {
-            msg: 'INCORRECT PASSWORD'
-        });
-        return;
-    } else {
-        res.render('login', {
-            msg: "LOGGED IN SUCCESSFULLY"
-        });
-    }
-});
 //------------------------------------------------------------------------
 
 //USER ACCOUNT
-app.get('/users/:username',(req,res)=>{
-    const username=req.params.username;
-    userModel.findOne({
+app.get('/users/:username',tools.checkAuthenticated,(req,res)=>{
+    const username=req.params.username;     //at now any authenticated user can access other
+    userModel.findOne({                     //user's profile
         username:username
     }, (err, userInfo) => {
         if (err) {
@@ -231,10 +249,10 @@ app.get('/users/:username',(req,res)=>{
 
 
 //UPDATE USER ACCOUNT
-app.post('/update-user',async(req,res)=>{
+app.post('/update-user',tools.checkAuthenticated,async(req,res)=>{
     let user=req.body;
     let redirectURL='/';
-    
+
     if(user.password!=user.repassword){
         redirectURL="/users/"+user.username+"?msg=Password do not match";
     }else{
@@ -249,7 +267,7 @@ app.post('/update-user',async(req,res)=>{
 
 
 //DELETE POST
-app.get('/delete-post',async(req,res)=>{
+app.get('/delete-post',tools.checkAuthenticated,async(req,res)=>{
 
     const postID=req.query.postID;
     const username=req.query.username;
@@ -265,6 +283,6 @@ app.get('/delete-post',async(req,res)=>{
 
 
 
-const port = 3000;
+const port = process.env.PORT||3000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));

@@ -8,3 +8,28 @@ exports.checkFileType = function (file, cb, path) {
             cb('Error: Images Only!');
         }
     }
+
+function checkAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        return next();
+    }
+
+    res.redirect('/login');
+}
+module.exports.checkAuthenticated=checkAuthenticated;
+
+
+function checkNotAuthenticated(req,res,next){
+    if(req.isAuthenticated()){
+        return res.redirect('/search');
+    }
+
+    next();
+}
+module.exports.checkNotAuthenticated=checkNotAuthenticated;
+
+function logout(req, res) {
+    req.logout();
+    res.redirect('/login');
+};
+module.exports.logout=logout;
