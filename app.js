@@ -89,19 +89,25 @@ app.get('/', (req, res) => {
 
 
 //UPLOAD
-app.get('/upload',tools.checkAuthenticated, (req, res) => {
-    res.render('index');
+app.get('/upload',tools.checkAuthenticated, async(req, res) => {
+    const username=(await req.user).username;
+    res.render('upload',{
+        username: username
+    });
 });
 
-app.post('/upload',tools.checkAuthenticated,(req, res) => {
-    upload(req, res, (err) => {
+app.post('/upload',tools.checkAuthenticated,async(req, res) => {
+    const username=(await req.user).username;
+    upload(req, res, async(err) => {
         if (err) {
-            res.render('index', {
-                msg: err
+            res.render('upload', {
+                message: err,
+                username: username
             });
         } else if (req.files == undefined) {
-            res.render('index', {
-                msg: 'Error: No File Selected!'
+            res.render('upload', {
+                message: 'Error: No File Selected!',
+                username: username
             });
         } else {
             const imgs = [];
@@ -135,8 +141,9 @@ app.post('/upload',tools.checkAuthenticated,(req, res) => {
                 }
             });
 
-            res.render('index', {
-                msg: 'Successfully uploaded!'
+            res.render('upload', {
+                message: 'Successfully uploaded!',
+                username: username
             });
         }
     });
@@ -250,20 +257,27 @@ app.get('/users/:username',tools.checkAuthenticated,(req,res)=>{
 
 //UPDATE USER ACCOUNT
 app.post('/update-user',tools.checkAuthenticated,async(req,res)=>{
-    let user=req.body;
+    let updatedUser=req.body;
     let redirectURL='/';
 
-    if(user.password!=user.repassword){
-        redirectURL="/users/"+user.username+"?msg=Password do not match";
+    let correctPassword=(await req.user).password;
+    let checkPassword = await bcrypt.compare(updatedUser["password"],correctPassword);
+    if(!checkPassword){
+        redirectURL="/users/"+updatedUser.username+"?msg=Wrong Paswword";
     }else{
-        delete user['repassword'];
-        let passwordHash = await bcrypt.hash(user["password"], 10);
-        user["password"]=passwordHash;
-        await userModel.findOneAndUpdate({username:user.username}, user);
-        redirectURL="/users/"+user.username+"?msg=Account updated Successfully";
+        const filter={username :updatedUser.username};
+        const update={firstname:updatedUser.firstname,
+                      lastname :updatedUser.lastname,
+                      mobileno :updatedUser.mobileno,
+                      email    :updatedUser.email,
+        };
+        await userModel.findOneAndUpdate(filter,update);
+        redirectURL="/users/"+updatedUser.username+"?msg=Account updated Successfully";
     }
     res.redirect(redirectURL);
 });
+
+
 
 
 //DELETE POST
@@ -281,7 +295,32 @@ app.get('/delete-post',tools.checkAuthenticated,async(req,res)=>{
     });
 });
 
+app.get('/changePassword',tools.checkAuthenticated,async(req,res)=>{
+    res.render('changePassword');
+});
 
+app.post('/changePassword',tools.checkAuthenticated,async(req,res)=>{
+    const oldPassword=req.body.oldPassword;
+    const newPassword=req.body.newPassword;
+    const newRePassword=req.body.newRePassword;
+    let correctPassword=(await req.user).password;
+    let checkPassword = await bcrypt.compare(oldPassword,correctPassword);
+
+
+    if(newPassword!==newRePassword){
+        res.render('changePassword',{ message:"Password do not match"});
+    }
+    else if(!checkPassword){
+        res.render('changePassword',{ message:"Wrong Password"});
+    }
+    else{
+        const filter={username :(await req.user).username};
+        const update={password: await bcrypt.hash(newPassword, 10)};
+        await userModel.findOneAndUpdate(filter,update);
+        const redirectURL="/users/"+(await req.user).username+"?msg=Password Changed Successfully";
+        res.redirect(redirectURL);
+    }
+});
 
 const port = process.env.PORT||3000;
 
