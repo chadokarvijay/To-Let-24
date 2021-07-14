@@ -145,7 +145,7 @@ app.post('/upload',tools.checkAuthenticated,(req, res) => {
 
 
 //SEARCH
-app.get('/search',tools.checkAuthenticated, (req, res) => {
+app.get('/search',tools.checkAuthenticated, async(req, res) => {
     res.render('search', {
         items: []
     });
