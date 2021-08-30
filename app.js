@@ -37,7 +37,13 @@ const upload = multer({
 
 
 
-mongoose.connect("mongodb://localhost:27017/tolet24DB", {
+// mongoose.connect("mongodb://localhost:27017/tolet24DB", {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+//     useFindAndModify: false
+// });
+
+mongoose.connect("mongodb+srv://tester_1:3KGV3bWafkqSZbz@cluster0.8hgjf.mongodb.net/tolet24DB", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false
