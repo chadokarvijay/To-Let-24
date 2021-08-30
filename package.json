@@ -13,13 +13,8 @@
   "author": "",
   "license": "ISC",
   "engines": {
-<<<<<<< HEAD
     "node": "14.17.0"
   },
-=======
-  "node": "14.17.0"
-},
->>>>>>> 84224439743cc529381189c5859213f4a0bc9388
   "bugs": {
     "url": "https://github.com/chadokarvijay/To-Let-24/issues"
   },
