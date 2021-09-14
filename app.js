@@ -1,6 +1,5 @@
-if(process.env.NODE_ENV!=='production'){
-    require('dotenv').config();
-}
+require('dotenv').config();
+
 const express = require('express');
 const multer = require('multer');
 const bodyParser = require("body-parser");
@@ -36,12 +35,6 @@ const upload = multer({
 }).array('myImage', 4);
 
 
-
-// mongoose.connect("mongodb://localhost:27017/tolet24DB", {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-//     useFindAndModify: false
-// });
 
 mongoose.connect("mongodb+srv://tester_1:3KGV3bWafkqSZbz@cluster0.8hgjf.mongodb.net/tolet24DB", {
     useNewUrlParser: true,
