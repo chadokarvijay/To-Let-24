@@ -50,7 +50,7 @@ var userModel = mongoose.model('users', schemas.userSchema);
 
  //HOME ROUTE
 app.get('/', (req, res) => {
-    res.send("Home Route");
+    res.render("home");
 });
 
 
@@ -181,6 +181,7 @@ app.post('/login', async (req, res) => {
         res.render('login', {
             msg: 'NO SUCH USER EXISTS'
         });
+        console.log("NO USER EXISTS")
         return;
     }
 
@@ -190,11 +191,10 @@ app.post('/login', async (req, res) => {
         res.render('login', {
             msg: 'INCORRECT PASSWORD'
         });
+        console.log("INCORRECT PASSWORD")
         return;
     } else {
-        res.render('login', {
-            msg: "LOGGED IN SUCCESSFULLY"
-        });
+     res.redirect('/');
     }
 });
 //------------------------------------------------------------------------

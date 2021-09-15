@@ -1,16 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
-    <title>Search</title>
-</head>
+<style>
+.list {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-around;
+}
+.container
+{
+  border: 2px solid black;
+}
 
-<body>
+
+.img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.cardr {
+  width: 100%;
+  height: 250px;
+border: 2px solid black;
+  background: #fff;
+
+  position: relative;
+}
+
+
+.boxr {
+  margin: 15px;
+  padding: 15px;
+  width: 400px;
+  height: 450px;
+
+  display: flex;
+  flex:wrap;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-radius: 10px;
+  background-color:#99aab5;
+}
+
+.other {
+  margin-top: 8px;
+  /* height: 190px; */
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  
+}
+
+
+</style>
+<%- include('partials/header') %> 
     <div class="container">
         <h1>Search</h1>
         <%= typeof msg != 'undefined' ? msg : '' %>
@@ -22,24 +71,29 @@
             <button type="submit" class="btn">Submit</button>
         </form>
         <br>
-        <div>
+        <div class="list">
             <% items.forEach(function(item) { %>
-            <div>
-                <div>
-                    <% item.imgs.forEach(function(img) { %>
-                        <img src="data:image/<%=img.contentType%>;base64,
-                         <%=img.data.toString('base64')%>">
-                    <% }) %>
-                    <h5><%= item.city %></h5>
-                    <h5><%= item.description %></h5>
-                    <h5><%= item.username %></h5>
+            
+                <div class="boxr">
+                  <div class="cardr">  
+                      <div class="img">
+                    
+                    <img src="data:image/<%=item.imgs[0].contentType%>;base64,
+                         <%=item.imgs[0].data.toString('base64')%>">
+                       </div>
+                   </div>
+                <div class="other">
+                
+                    <h5>City: <%= item.city %></h5>
+                    <h5>Description: <%= item.description %></h5>
+                    <h5>Owner: <%= item.username %></h5>
                 </div>
-            </div>
+                </div>
+               
+
+        
             <% }) %>
         </div>
 
         <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-</body>
-
-</html>
