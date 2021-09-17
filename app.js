@@ -82,7 +82,7 @@ app.use(passport.session());
 
  //HOME ROUTE
 app.get('/', (req, res) => {
-    res.send("Home Route");
+    res.render("home");
 });
 
 
