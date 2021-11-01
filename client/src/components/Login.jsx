@@ -1,6 +1,7 @@
-import React  from 'react';
+import React,{useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Typography, Button, TextField } from '@material-ui/core'
+import { Button, TextField ,Typography} from '@material-ui/core'
+import axios from 'axios'
 
 
 const Login =()=>{
@@ -36,16 +37,41 @@ const Login =()=>{
        })
        const classes = useStyles();
 
+       const [formDetails, updateformDetails] = useState({username:"",password:""})
+        const update=(e)=>{
+    
+    
+            let cName= e.target.name;
+            let cValue= e.target.value;
+            updateformDetails({...formDetails,[cName]:cValue})
+            console.log(formDetails)
+            
+        }
+        const Submit = async (e)=>{
+            e.preventDefault();
+            
+           
+             axios.post('/login',
+            
+            {
+                username: formDetails.username,
+                password: formDetails.password,
+            }).then(function(res){
+                console.log(res.data);
+            })
+        
+        }
+
     return (
         <>
         <div className= {classes.root}>
-        <form className={classes.form}>
+        <form className={classes.form} onSubmit={Submit}>
                 <Typography variant="h4"> 
                 Log In
                 </Typography>
 
-                <TextField   id="name" label="Username" variant='outlined' name="username" required style={{width:'95%'}}/>
-                <TextField   id="password" label="Password" variant='outlined' name="password" type="password" required style={{width:'95%'}}/>
+                <TextField   id="name" label="Username" variant='outlined' onChange={update} name="username" required style={{width:'95%'}}/>
+                <TextField   id="password" label="Password" variant='outlined' onChange={update} name="password" type="password" required style={{width:'95%'}}/>
 
 
                 <Button variant="contained" type="submit" style={{backgroundColor:"#56baed",color:"white",width:"45%"}}>Submit</Button>

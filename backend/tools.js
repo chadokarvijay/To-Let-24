@@ -10,28 +10,27 @@
 }
 
 async function checkAuthenticated(req,res,next){
-
-if(req.isAuthenticated()){
-    const auth1=(req.params.username===undefined || req.params.username==(await req.user).username);
-    const auth2=(req.query.username===undefined  || req.query.username==(await req.user).username);
-    if(!auth1 || !auth2){
-        res.send('Access Denied'); //trying to enter into other user's profile
-        return false;
+    if(req.isAuthenticated()){
+        // const auth1=(req.params.username===undefined || req.params.username==(await req.user).username);
+        // const auth2=(req.query.username===undefined  || req.query.username==(await req.user).username);
+        // if(!auth1 || !auth2){
+        //     res.send('Access Denied'); //trying to enter into other user's profile
+        //     return false;
+        // }
+        return next();
     }
-    return next();
-}
-
-res.redirect('/login');
+res.send('Redirect to login');
 }
 module.exports.checkAuthenticated=checkAuthenticated;
 
 
 async function checkNotAuthenticated(req,res,next){
-if(req.isAuthenticated()){
-    return res.redirect('/search');
-}
-
-next();
+    // console.log(req.body);
+    // console.log(req.isAuthenticated());
+    if(req.isAuthenticated()){
+        return res.send("authenticated");
+    }
+    next();
 }
 module.exports.checkNotAuthenticated=checkNotAuthenticated;
 

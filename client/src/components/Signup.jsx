@@ -43,7 +43,6 @@ const Signup =()=>{
             mobileno: formDetails.mobileno,
         }).then(function(res){
             console.log(res.data);
-        
         })
     
     }

@@ -34,8 +34,9 @@ const upload = multer({
 
 
 
-mongoose.connect("mongodb+srv://tester_1:3KGV3bWafkqSZbz@cluster0.8hgjf.mongodb.net/tolet24DB", {
-    useNewUrlParser: true,
+//mongoose.connect("mongodb+srv://tester_1:3KGV3bWafkqSZbz@cluster0.8hgjf.mongodb.net/tolet24DB", {
+mongoose.connect("mongodb://localhost:27017/tolet24DB", {   
+useNewUrlParser: true,
     useUnifiedTopology: true,
 
 });
@@ -233,21 +234,23 @@ app.post('/signup',tools.checkNotAuthenticated, async (req, res) => {
 
 
 // LOGIN
-app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
-    //res.render('login.ejs');
-});
+// app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
+//     //res.render('login.ejs');
+// });
 
-app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local',{
-    successRedirect:'/search',
-    failureRedirect:'/login',
-    failureFlash:true
-}));
+// app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local',{
+//     successRedirect:'/search',
+//     failureRedirect:'/login',
+//     failureFlash:true
+// }));
 
+// app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
+//     res.render('login.ejs');
+// });
 
-// LOGOUT
-app.get('/logout',(req,res)=>{
-    tools.logout(req,res);
-});
+app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local'),(req, res)=> {
+    res.send("First time autentication successful");
+  });
 
 
 //------------------------------------------------------------------------
