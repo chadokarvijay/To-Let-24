@@ -3,17 +3,17 @@ const bcrypt=require('bcrypt');
 
 function initialize(passport,getUserByUsername,getUserById){
     const authenticateUser= async(username,password,done)=>{
+        
         const user=await getUserByUsername(username);
         if(user==null){
-            return done(null,false,{message:'No user with that username'});
+            return done(null,false);
         }
 
         const match= await bcrypt.compare(password,user.password);
-
         if(match){
             return done(null,user);
         }else{
-            return  done(null,false,{message:"Password Incorrect"});
+            return  done(null,false);
         }
     }
     passport.use(new LocalStrategy({usernameField:'username'},authenticateUser));

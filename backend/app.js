@@ -3,16 +3,14 @@ require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const bodyParser = require("body-parser");
-const ejs = require('ejs');
 const path = require('path');
 const mongoose = require("mongoose");
 const tools = require(__dirname + "/tools.js")
-const schemas = require(__dirname + "/schemas.js")
+const schemas = require(__dirname + "/models/models.js")
 var fs = require('fs');
 const bcrypt = require('bcrypt')
 const passport=require('passport');
 const initializePassport=require('./passport-config');
-const flash=require('express-flash');
 const session=require('express-session');
 
 // Set The Storage Engine
@@ -36,10 +34,11 @@ const upload = multer({
 
 
 
-mongoose.connect("mongodb+srv://tester_1:3KGV3bWafkqSZbz@cluster0.8hgjf.mongodb.net/tolet24DB", {
-    useNewUrlParser: true,
+//mongoose.connect("mongodb+srv://tester_1:3KGV3bWafkqSZbz@cluster0.8hgjf.mongodb.net/tolet24DB", {
+mongoose.connect("mongodb://localhost:27017/tolet24DB", {   
+useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+
 });
 
 var imgModel = mongoose.model("posts", schemas.imageSchema);
@@ -56,14 +55,12 @@ initializePassport(passport,getUserByUsername,getUserById);
 
 const app = express();
 
-app.set('view engine', 'ejs');
+app.use(bodyParser.json())
 
-app.use(express.static('./public'));
 
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(flash());
 
 app.use(session({
     secret:process.env.SESSION_SECRET,
@@ -82,7 +79,8 @@ app.use(passport.session());
 
  //HOME ROUTE
 app.get('/', (req, res) => {
-    res.render("home");
+    //res.render("home");
+    res.send("home");
 });
 
 
@@ -90,24 +88,27 @@ app.get('/', (req, res) => {
 //UPLOAD
 app.get('/upload',tools.checkAuthenticated, async(req, res) => {
     const username=(await req.user).username;
-    res.render('upload',{
-        username: username
-    });
+    // res.render('upload',{
+    //     username: username
+    // });
+    res.send("upload");
 });
 
 app.post('/upload',tools.checkAuthenticated,async(req, res) => {
     const username=(await req.user).username;
     upload(req, res, async(err) => {
         if (err) {
-            res.render('upload', {
-                message: err,
-                username: username
-            });
+            // res.render('upload', {
+            //     message: err,
+            //     username: username
+            // });
+            res.send("upload err");
         } else if (req.files == undefined) {
-            res.render('upload', {
-                message: 'Error: No File Selected!',
-                username: username
-            });
+            // res.render('upload', {
+            //     message: 'Error: No File Selected!',
+            //     username: username
+            // });
+            res.send("upload err no file");
         } else {
             const imgs = [];
             const files = req.files;
@@ -140,10 +141,11 @@ app.post('/upload',tools.checkAuthenticated,async(req, res) => {
                 }
             });
 
-            res.render('upload', {
-                message: 'Successfully uploaded!',
-                username: username
-            });
+            // res.render('upload', {
+            //     message: 'Successfully uploaded!',
+            //     username: username
+            // });
+            res.send("upload success");
         }
     });
 });
@@ -152,73 +154,103 @@ app.post('/upload',tools.checkAuthenticated,async(req, res) => {
 
 //SEARCH
 app.get('/search',tools.checkAuthenticated, async(req, res) => {
-    res.render('search', {
-        items: []
-    });
+    // res.render('search', {
+    //     items: []
+    // });
+    res.send("search");
 });
 
-app.post('/search',tools.checkAuthenticated, (req, res) => {
-    imgModel.find({
-        city: req.body.city
-    }, (err, items) => {
-        if (err) {
-            console.log(err);
-            res.status(500).send('An error occurred', err);
-        } else {
-            res.render('search', {
-                items: items
-            });
+app.post('/search',tools.checkAuthenticated, async(req, res) => {
+    // imgModel.find({
+    //     city: req.body.city
+    // }, (err, items) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.status(500).send('An error occurred', err);
+    //     } else {
+    //         // res.render('search', {
+    //         //     items: items
+    //         // });
+    //         res.send();
+    //         res.json(CarsList);
+    //     }
+    // });
+    if(!req.body.city)
+    {
+    try {
+        const imgModels = await imgModel.find({city:req.body.city})
+        res.json(imgModels);
+    }
+    catch (err) {
+        res.status(500).json({message: err.message});
+    }
+    }
+    else
+    {
+        try {
+            const imgModels = await imgModel.find()
+            res.json(imgModels);
         }
-    });
+        catch (err) {
+            res.status(500).json({message: err.message});
+        }
+
+    }
+
 });
 
 
 
-//SIGNUP
 app.get('/signup',tools.checkNotAuthenticated, (req, res) => {
-    res.render('signup');
+    //res.render('signup');
+    res.send("signup");
 });
 
 // -------------------- code by Mannan---------------------------------------
 app.post('/signup',tools.checkNotAuthenticated, async (req, res) => {
-
-    let passwordHash = await bcrypt.hash(req.body.password, 10);
+    console.log(req.body);
+    let passwordHash = await bcrypt.hash(req.body.password, 10)
+   
     var obj = {
         firstname: req.body.firstname,
         lastname: req.body.lastname,
         username: req.body.username,
         mobileno: req.body.mobileno,
         email: req.body.email,
-        password: passwordHash
+        password: passwordHash,
     }
     userModel.create(obj, (err, item) => {
         if (err) {
             console.log(err);
+            res.send(err)
+            return;
         } else {
             item.save();
         }
     });
-    res.redirect('/');
+    res.send("Creted Succesfully")
 });
 
 
 
-//LOGIN
-app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
-    res.render('login.ejs');
-});
+// LOGIN
+// app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
+//     //res.render('login.ejs');
+// });
 
-app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local',{
-    successRedirect:'/search',
-    failureRedirect:'/login',
-    failureFlash:true
-}));
+// app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local',{
+//     successRedirect:'/search',
+//     failureRedirect:'/login',
+//     failureFlash:true
+// }));
 
+// app.get('/login',tools.checkNotAuthenticated,(req,res)=>{
+//     res.render('login.ejs');
+// });
 
-//LOGOUT
-app.get('/logout',(req,res)=>{
-    tools.logout(req,res);
-});
+app.post('/login',tools.checkNotAuthenticated, passport.authenticate('local'),(req, res)=> {
+    res.send("First time autentication successful");
+  });
 
 
 //------------------------------------------------------------------------
@@ -242,11 +274,12 @@ app.get('/users/:username',tools.checkAuthenticated,(req,res)=>{
                     console.log(err);
                     res.status(500).send('An error occurred', err);
                 } else {
-                    res.render('user', {
-                        userInfo:userInfo,
-                        userPosts:userPosts,
-                        msg:req.query.msg
-                    });
+                    // res.render('user', {
+                    //     userInfo:userInfo,
+                    //     userPosts:userPosts,
+                    //     msg:req.query.msg
+                    // });
+                    res.send("user info");
                 }
             });
         }
@@ -254,7 +287,7 @@ app.get('/users/:username',tools.checkAuthenticated,(req,res)=>{
 });
 
 
-//UPDATE USER ACCOUNT
+// //UPDATE USER ACCOUNT
 app.post('/update-user',tools.checkAuthenticated,async(req,res)=>{
     let updatedUser=req.body;
     let redirectURL='/';
@@ -273,29 +306,33 @@ app.post('/update-user',tools.checkAuthenticated,async(req,res)=>{
         await userModel.findOneAndUpdate(filter,update);
         redirectURL="/users/"+updatedUser.username+"?msg=Account updated Successfully";
     }
-    res.redirect(redirectURL);
+    //res.redirect(redirectURL);
+    res.send("Account Updated");
 });
 
 
 
 
-//DELETE POST
+// //DELETE POST
 app.get('/delete-post',tools.checkAuthenticated,async(req,res)=>{
 
     const postID=req.query.postID;
     const username=req.query.username;
     imgModel.deleteOne({ _id:postID }, (err,post)=>{
         if(err){
-            res.redirect("/users/"+username+"?msg=Cannot Delete");
+            //res.redirect("/users/"+username+"?msg=Cannot Delete");
+            res.send("Cannot Delete");
         }
         else{
-            res.redirect("/users/"+username+"?msg=Deleted Successfully");
+            //res.redirect("/users/"+username+"?msg=Deleted Successfully");
+            res.send("Deleted");
         }
     });
 });
 
 app.get('/changePassword',tools.checkAuthenticated,async(req,res)=>{
-    res.render('changePassword');
+    //res.render('changePassword');
+    res.send("Change Password");
 });
 
 app.post('/changePassword',tools.checkAuthenticated,async(req,res)=>{
@@ -307,10 +344,12 @@ app.post('/changePassword',tools.checkAuthenticated,async(req,res)=>{
 
 
     if(newPassword!==newRePassword){
-        res.render('changePassword',{ message:"Password do not match"});
+        //res.render('changePassword',{ message:"Password do not match"});
+        res.send("Password do not match");
     }
     else if(!checkPassword){
-        res.render('changePassword',{ message:"Wrong Password"});
+        //res.render('changePassword',{ message:"Wrong Password"});
+        res.send("Wrong Password");
     }
     else{
         const filter={username :(await req.user).username};
@@ -321,6 +360,6 @@ app.post('/changePassword',tools.checkAuthenticated,async(req,res)=>{
     }
 });
 
-const port = process.env.PORT||3000;
+const port = process.env.PORT||5000;
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
