@@ -4,20 +4,26 @@ import Navbar from './components/Navbar.jsx';
 import LandingPage  from './components/LandingPage.jsx';
 import Login from './components/Login.jsx';
 import Signup  from './components/Signup.jsx';
+import Search  from './components/Search.jsx';
 function App() {
   return (
   <>
   <Switch>
-      <Route path="/login">
+      <Route exact path="/login">
           <Login/>
       </Route>
-      <Route path="/signup">
+      <Route exact path="/signup">
            <Signup/>
+      </Route>
+      <Route exact path="/search">
+          <Navbar/>
+          <Search/>
       </Route>
       <Route path="/">
           <Navbar/>
           <LandingPage/>
       </Route>
+      
 
   </Switch>
   </>
