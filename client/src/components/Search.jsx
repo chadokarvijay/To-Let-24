@@ -4,6 +4,7 @@ import { Button } from '@material-ui/core'
 import {AiOutlineSearch} from 'react-icons/ai'
 import List from '../images/list.json'
 import Rent from './Cards/Rent.jsx'
+import img from '../images/room.png'
 const Search=()=>{
 
     const [search, setSearch]= useState("")
@@ -27,12 +28,12 @@ const Search=()=>{
     const useStyles = makeStyles({
         root: {
             marginTop:"60px",
-    
             display: "flex",
             justifyContent:"center",
             flexDirection:"column",
             "alignItems":"center",
-            backgroundColor:"#eaeaea"
+            backgroundColor:"#eaeaea",
+        
 
         },
         searchBox:
@@ -51,7 +52,15 @@ const Search=()=>{
             height:"52px",
             padding:"0 12px",
             fontSize:"18px"
-          }
+          },
+         searchList:
+         {
+             margin:"10px",
+             display: "flex",
+             justifyContent: "space-around",
+             border: "1px solid red",
+             flexWrap: "wrap",
+         } 
  
        
        })
@@ -66,9 +75,9 @@ const Search=()=>{
         <Button type="submit" variant="contained" color="primary" style={{height:"52px",fontSize:"18px",width:"200px",textTransform: 'capitalize',display:"flex",justifyContent:"space-around",padding:" 0 50px",borderRadius:"0"}}><AiOutlineSearch/> Search</Button>
         </div>
 
-        <div>
+        <div className={classes.searchList}>
         {searchList.map((ele, i) => {     
-                  return <Rent/>    
+                  return <Rent image={ele.image} type={ele.type} city={ele.city} location={ele.location} bedrooms={ele.bedrooms} price={ele.price}/>    
           
         })}
 
