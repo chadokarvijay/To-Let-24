@@ -4,20 +4,43 @@
     "image": "https://images.unsplash.com/photo-1536935338788-846bb9981813?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=686&q=80",
     "description": "This is the best house",
     "username": "mannan",
-    "city": "Sarni"
+    "city": "Sarni",
+    "type": "Apartment",
+    "location": "Shopping Center",
+    "price": 1000,
+    "bedrooms": 2
   },
   {
     "id": 1,
     "image": "https://images.unsplash.com/photo-1536935338788-846bb9981813?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=686&q=80",
     "description": "This is the best house",
     "username": "mannan",
-    "city": "Sarni"
+    "type": "Apartment",
+    "city": "Sarni",
+    "location": "SBI Colony",
+    "price": 2000,
+    "bedrooms": 3
   },
   {
     "id": 1,
     "image": "https://images.unsplash.com/photo-1536935338788-846bb9981813?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=686&q=80",
     "description": "This is the best house",
     "username": "mannan",
-    "city": "Sarni"
+    "type": "Paying Guest",
+    "city": "Sarni",
+    "location": "D Type",
+    "price": 2000,
+    "bedrooms": 3
+  },
+  {
+    "id": 1,
+    "image": "https://images.unsplash.com/photo-1536935338788-846bb9981813?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=686&q=80",
+    "description": "This is the best house",
+    "username": "mannan",
+    "type": "Paying Guest",
+    "city": "Sarni",
+    "location": "D Type",
+    "price": 5000,
+    "bedrooms": 4
   }
 ]
