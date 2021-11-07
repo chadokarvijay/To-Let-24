@@ -30,7 +30,7 @@ const upload = multer({
     fileFilter: function(req, file, cb) {
         tools.checkFileType(file, cb, path);
     }
-}).array('myImage', 4);
+}).array('myImage', 20);
 
 
 
@@ -41,7 +41,7 @@ useNewUrlParser: true,
 
 });
 
-var imgModel = mongoose.model("posts", schemas.imageSchema);
+var imgModel = mongoose.model("posts", schemas.postSchema);
 var userModel = mongoose.model('users', schemas.userSchema);
 
 
@@ -55,10 +55,10 @@ initializePassport(passport,getUserByUsername,getUserById);
 
 const app = express();
 
-app.use(bodyParser.json())
+app.use(express.json())
 
 
-app.use(bodyParser.urlencoded({
+app.use(express.urlencoded({
     extended: true
 }));
 
@@ -95,21 +95,15 @@ app.get('/upload',tools.checkAuthenticated, async(req, res) => {
 });
 
 app.post('/upload',tools.checkAuthenticated,async(req, res) => {
-    const username=(await req.user).username;
+    //const username=(await req.user).username;
+    console.log(req.body);
     upload(req, res, async(err) => {
         if (err) {
-            // res.render('upload', {
-            //     message: err,
-            //     username: username
-            // });
-            res.send("upload err");
-        } else if (req.files == undefined) {
-            // res.render('upload', {
-            //     message: 'Error: No File Selected!',
-            //     username: username
-            // });
-            res.send("upload err no file");
-        } else {
+            res.send(err);
+        }else if (req.files == undefined) {
+            res.send("upload atleast one image");
+        }    
+        else{
             const imgs = [];
             const files = req.files;
 
@@ -129,23 +123,31 @@ app.post('/upload',tools.checkAuthenticated,async(req, res) => {
 
             var obj = {
                 username: req.body.username,
+                contactNumber: req.body.contactNumber,
+                numberOfTotalRooms: req.body.numberOfTotalRooms,
+                numberOfBedrooms: req.body.numberOfBedrooms,
+                kitchen: req.body.kitchen,
+                attachedToiletBathroom: req.body.attachedToiletBathroom,
+                floorArea: req.body.floorArea,
+                floorNumber: req.body.floorArea,
+                water: req.body.water,
+                monthlyRent: req.body.monthlyRent,
+                electricityChargeIncluded: req.body.electricityChargeIncluded,
+                location: req.body.location,
                 city: req.body.city,
+                pincode:req.body.pincode,
                 description: req.body.description,
                 imgs: imgs
             }
             imgModel.create(obj, (err, item) => {
                 if (err) {
                     console.log(err);
+                    res.send("upload err "+err);
                 } else {
+                    res.send("upload success");
                     item.save();
                 }
             });
-
-            // res.render('upload', {
-            //     message: 'Successfully uploaded!',
-            //     username: username
-            // });
-            res.send("upload success");
         }
     });
 });
